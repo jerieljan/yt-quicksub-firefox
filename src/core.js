@@ -1,10 +1,8 @@
-(function (root, factory) {
+((root, factory) => {
   const api = factory();
   root.YtQuickSubCore = api;
   if (typeof module === "object" && module.exports) module.exports = api;
-})(typeof globalThis !== "undefined" ? globalThis : this, function () {
-  "use strict";
-
+})(typeof globalThis !== "undefined" ? globalThis : this, () => {
   const WORD_MAX_MS = 800;
   const MARKER_END_PAD_MS = 50;
   const DEFAULTS = Object.freeze({
@@ -39,13 +37,9 @@
   }
 
   function extractPlayerResponse(source) {
-    const patterns = [
-      /ytInitialPlayerResponse\s*=\s*/g,
-      /window\[\s*["']ytInitialPlayerResponse["']\s*\]\s*=\s*/g,
-    ];
+    const patterns = [/ytInitialPlayerResponse\s*=\s*/g, /window\[\s*["']ytInitialPlayerResponse["']\s*\]\s*=\s*/g];
     for (const pattern of patterns) {
-      let match;
-      while ((match = pattern.exec(source))) {
+      for (const match of source.matchAll(pattern)) {
         const openAt = source.indexOf("{", match.index + match[0].length);
         if (openAt < 0) continue;
         const json = readBalancedObject(source, openAt);
@@ -113,7 +107,7 @@
       segs.slice(1).some((seg) => {
         const text = seg.utf8 || "";
         return !text.startsWith(" ") && /\S\s+\S/.test(text);
-      })
+      }),
     );
 
     const tokens = [];
@@ -137,9 +131,7 @@
       if (!text) return [];
       const nextStart = index + 1 < tokens.length ? tokens[index + 1][0] : start + WORD_MAX_MS;
       const isMarker = /^\[[^\]]+\]$/.test(text);
-      const end = isMarker
-        ? Math.max(start, nextStart - MARKER_END_PAD_MS)
-        : Math.min(start + WORD_MAX_MS, nextStart);
+      const end = isMarker ? Math.max(start, nextStart - MARKER_END_PAD_MS) : Math.min(start + WORD_MAX_MS, nextStart);
       return [{ start, end, text, isMarker }];
     });
   }
@@ -151,7 +143,11 @@
       if (event.aAppend || !event.segs?.length) continue;
       const start = Number.parseInt(event.tStartMs || 0, 10);
       const end = start + Number.parseInt(event.dDurationMs || 0, 10);
-      const text = event.segs.map((seg) => seg.utf8 || "").join("").trim().replace(/\s+/g, " ");
+      const text = event.segs
+        .map((seg) => seg.utf8 || "")
+        .join("")
+        .trim()
+        .replace(/\s+/g, " ");
       if (text) cues.push({ start, end: Math.max(start, end), text });
     }
     return cues;
@@ -163,7 +159,7 @@
   }
 
   function isSentenceEnd(word) {
-    const text = word.text.replace(/['"’”\)\]\}]+$/u, "");
+    const text = word.text.replace(/['"’”)\]}]+$/u, "");
     return text.length > 1 && ".!?".includes(text.at(-1));
   }
 
@@ -189,10 +185,7 @@
       const nextGap = index + 1 < words.length ? words[index + 1].start - word.start : 0;
       const isLast = index + 1 === words.length;
       const sentenceBreak = isSentenceEnd(word) && chars >= settings.minChars;
-      const overflow =
-        chars >= settings.maxChars ||
-        duration >= settings.maxDurMs ||
-        nextGap >= settings.pauseBreakMs;
+      const overflow = chars >= settings.maxChars || duration >= settings.maxDurMs || nextGap >= settings.pauseBreakMs;
 
       if (isLast || sentenceBreak) {
         boundaries.push(index);
@@ -253,8 +246,9 @@
     let text = (title || "")
       .normalize("NFKC")
       .replace(/[\u00ad\u200b\u200e\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/gu, "")
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: control characters in titles must become spaces
       .replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/gu, " ")
-      .replace(/[\/\\:*?"<>|]/gu, " ")
+      .replace(/[/\\:*?"<>|]/gu, " ")
       .replace(/\s+/gu, " ")
       .replace(/^[ .]+|[ .]+$/gu, "");
 

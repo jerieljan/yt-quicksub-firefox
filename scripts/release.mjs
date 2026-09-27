@@ -10,14 +10,26 @@ const manifest = JSON.parse(await readFile(join(root, "manifest.json")));
 const pkg = JSON.parse(await readFile(join(root, "package.json")));
 if (manifest.version !== pkg.version) throw new Error("Manifest and package versions must match.");
 // Explicit files prevent tests, credentials, editor files, or old builds entering the XPI.
-const files = ["manifest.json", "LICENSE", "icons/icon.svg", "popup/popup.html",
-  "popup/popup.css", "popup/popup.js", "src/background.js", "src/content.js",
-  "src/content.css", "src/core.js"];
+const files = [
+  "manifest.json",
+  "LICENSE",
+  "icons/icon.svg",
+  "popup/popup.html",
+  "popup/popup.css",
+  "popup/popup.js",
+  "src/background.js",
+  "src/content.js",
+  "src/content.css",
+  "src/core.js",
+];
 const stage = await mkdtemp(join(tmpdir(), "yt-quicksub-release-"));
 const cli = join(root, "node_modules/web-ext/bin/web-ext.js");
 function run(args) {
-  const result = spawnSync(process.execPath, [cli, ...args], { cwd: root, stdio: "inherit",
-    env: { ...process.env, NO_UPDATE_NOTIFIER: "1" } });
+  const result = spawnSync(process.execPath, [cli, ...args], {
+    cwd: root,
+    stdio: "inherit",
+    env: { ...process.env, NO_UPDATE_NOTIFIER: "1" },
+  });
   if (result.error) throw result.error;
   if (result.status !== 0) throw new Error(`web-ext failed (${result.status}).`);
 }
@@ -31,9 +43,10 @@ try {
     const output = join(root, "dist");
     const filename = `yt-quicksub-firefox-${manifest.version}.xpi`;
     await mkdir(output, { recursive: true });
-    run(["build", "--source-dir", stage, "--artifacts-dir", output,
-      "--filename", filename, "--overwrite-dest"]);
-    const digest = createHash("sha256").update(await readFile(join(output, filename))).digest("hex");
+    run(["build", "--source-dir", stage, "--artifacts-dir", output, "--filename", filename, "--overwrite-dest"]);
+    const digest = createHash("sha256")
+      .update(await readFile(join(output, filename)))
+      .digest("hex");
     await writeFile(join(output, `${filename}.sha256`), `${digest}  ${filename}\n`);
     // Keep the original package location current for existing users of this repository.
     await copyFile(join(output, filename), join(root, "yt-quicksub-firefox.xpi"));

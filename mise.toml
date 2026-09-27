@@ -1,0 +1,26 @@
+[tools]
+node = "24.18.0"
+
+[tasks."lint"]
+description = "Run the lint project check"
+run = "npm run lint"
+
+[tasks."format-check"]
+description = "Check project formatting"
+run = "npm run format:check"
+
+[tasks."test"]
+description = "Run the test project check"
+run = "npm run test"
+
+[tasks."format"]
+description = "Format project files"
+run = "npm run format"
+
+[tasks."lint-fix"]
+description = "Apply safe lint fixes"
+run = "npm run lint:fix"
+
+[tasks."check"]
+description = "Run fast project checks"
+depends = ["format-check", "lint"]

@@ -1,6 +1,4 @@
 (() => {
-  "use strict";
-
   const core = globalThis.YtQuickSubCore;
   const CONTROL_ID = "yt-quicksub-control";
   let cachedVideo = null;
@@ -87,7 +85,12 @@
 
   function chooseDefaultTrack(tracks) {
     const english = tracks.filter((track) => track.languageCode === "en" || track.languageCode === "en-orig");
-    return english.find((track) => !track.isAsr) || english.find((track) => track.isAsr) || tracks.find((track) => track.isAsr) || tracks[0];
+    return (
+      english.find((track) => !track.isAsr) ||
+      english.find((track) => track.isAsr) ||
+      tracks.find((track) => track.isAsr) ||
+      tracks[0]
+    );
   }
 
   function captionResourceUrls() {
@@ -183,9 +186,7 @@
     if (!track) throw new Error("This video has no caption tracks.");
 
     const content = await fetchJson3(track, info.videoId);
-    const cues = track.isAsr
-      ? core.groupWords(core.parseJson3(content))
-      : core.parseManualJson3(content);
+    const cues = track.isAsr ? core.groupWords(core.parseJson3(content)) : core.parseManualJson3(content);
     if (!cues.length) throw new Error("The caption track did not produce any subtitle cues.");
 
     const filename = core.defaultOutputName(info.title, info.videoId, track.languageCode);
@@ -255,8 +256,8 @@
 
     const actionButtons = document.querySelector(
       "ytd-watch-metadata #actions-inner #menu #top-level-buttons-computed, " +
-      "ytd-watch-metadata #actions #menu #top-level-buttons-computed, " +
-      "#above-the-fold #actions-inner #top-level-buttons-computed"
+        "ytd-watch-metadata #actions #menu #top-level-buttons-computed, " +
+        "#above-the-fold #actions-inner #top-level-buttons-computed",
     );
     if (!actionButtons) return false;
     const wrapper = document.createElement("div");

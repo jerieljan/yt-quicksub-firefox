@@ -1,6 +1,4 @@
 (() => {
-  "use strict";
-
   const status = document.getElementById("status");
   const form = document.getElementById("download-form");
   const select = document.getElementById("track");
@@ -32,12 +30,14 @@
       const { info } = response;
       if (!info.tracks.length) throw new Error("This video has no caption tracks.");
 
-      select.replaceChildren(...info.tracks.map((track) => {
-        const option = document.createElement("option");
-        option.value = track.id;
-        option.textContent = `${track.name} (${track.languageCode}) — ${track.isAsr ? "auto-generated" : "manual"}`;
-        return option;
-      }));
+      select.replaceChildren(
+        ...info.tracks.map((track) => {
+          const option = document.createElement("option");
+          option.value = track.id;
+          option.textContent = `${track.name} (${track.languageCode}) — ${track.isAsr ? "auto-generated" : "manual"}`;
+          return option;
+        }),
+      );
       select.selectedIndex = chooseDefaultIndex(info.tracks);
       setStatus(`${info.tracks.length} caption track${info.tracks.length === 1 ? "" : "s"} found for “${info.title}”.`);
       form.hidden = false;

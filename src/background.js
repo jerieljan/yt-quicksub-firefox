@@ -1,6 +1,4 @@
 (() => {
-  "use strict";
-
   // Tokens stay in memory and are scoped to the tab and video that generated
   // them. Nothing is persisted; tokens are reused only for caption requests to YouTube.
   const tokensByTab = new Map();
@@ -31,7 +29,7 @@
         capturedAt: Date.now(),
       });
     },
-    { urls: ["https://www.youtube.com/api/timedtext*"] }
+    { urls: ["https://www.youtube.com/api/timedtext*"] },
   );
 
   browser.runtime.onMessage.addListener((message, sender) => {

@@ -1,9 +1,10 @@
 # yt-quicksub for Firefox
 
-A standalone Firefox extension that downloads the current YouTube video's
-captions as a readable SRT file. Auto-generated tracks use the same parsing,
-cue grouping, and timing rules as the `yt-quicksub` Python CLI in the sibling
-repository.
+This plugin lets you download the auto-generated or manual caption files in YouTube videos. Auto-generated subs are processed locally for timing corrections so they render like proper subtitles rather than TV-style captions that appear word by word.
+
+Text is processed as-is. No corrections or editing is performed beyond timing correction, and no data is transmitted outward and all of it is processed locally.
+
+The add-on does not render SRT files on YouTube videos. It's recommended to use other add-ons that does this for you if you want it displayed.
 
 ## What it does
 
@@ -40,39 +41,20 @@ signed package from Mozilla Add-ons.
 
 ## Test
 
+Use Node.js 24.18.0 (configured in `mise.toml`).
+
 ```sh
 npm ci
 npm test
 npm run lint
 ```
 
-The tests use Node's built-in test runner. Release validation uses the pinned
-Mozilla web-ext development dependency; runtime code has no dependencies.
+The tests use Vitest. Lint checks run Biome and the pinned Mozilla web-ext
+validator; runtime code has no dependencies. Run `rig check` for validation
+or `rig check --fix` to apply setup repairs, formatting, and safe lint fixes.
 
 ## Package
 
 ```sh
 npm run package
 ```
-
-This runs tests and Mozilla validation (warnings fail the build), then creates
-`dist/yt-quicksub-firefox-0.1.5.xpi` and a SHA-256 checksum. It also refreshes
-`yt-quicksub-firefox.xpi` for compatibility with the original package command.
-Only explicitly listed runtime files and the license enter the package.
-Mozilla must sign an XPI before regular Firefox releases can install it permanently.
-
-Desktop requires Firefox 140 or later; Android requires 142 or later. Android
-behavior still needs device testing before publication. See
-[AMO submission notes](docs/AMO-SUBMISSION.md) for listing copy, privacy details,
-reviewer instructions, and the manual release checklist.
-
-## Important maintenance note
-
-The official YouTube Data API only lets a user download captions for videos
-they can edit. This extension instead reads the caption-track URL already sent
-to the YouTube watch page and reuses the subtitle Proof-of-Origin token created
-by YouTube's own player. That makes public-video use possible without an API key,
-token provider, or server, but it is an undocumented YouTube interface. YouTube
-can change the watch-page response, token parameters, or `json3` endpoint, so
-the fetch adapter in `src/content.js` may need maintenance even though the
-conversion code in `src/core.js` is stable.

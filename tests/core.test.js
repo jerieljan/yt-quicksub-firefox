@@ -1,6 +1,6 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const {
+import { test } from "vitest";
+import assert from "node:assert/strict";
+import {
   parseJson3,
   parseManualJson3,
   groupWords,
@@ -10,10 +10,10 @@ const {
   requiresSubtitlePoToken,
   findSubtitlePoToken,
   buildCaptionUrl,
-} = require("../src/core.js");
+} from "../src/core.js";
 
 function makeWords(text, startMs = 0, wordMs = 350) {
-  return text.split(/\s+/).map((token, index, tokens) => ({
+  return text.split(/\s+/).map((token, index) => ({
     start: startMs + index * wordMs,
     end: startMs + (index + 1) * wordMs,
     text: token,
@@ -22,25 +22,36 @@ function makeWords(text, startMs = 0, wordMs = 350) {
 }
 
 test("reconstructs fragments and ignores rolling-window append events", () => {
-  const words = parseJson3({ events: [
-    { tStartMs: 1000, segs: [{ utf8: "Hel" }, { utf8: "lo" }, { utf8: " world", tOffsetMs: 500 }] },
-    { aAppend: 1, tStartMs: 1800, segs: [{ utf8: "\n" }] },
-  ] });
-  assert.deepEqual(words.map((word) => word.text), ["Hello", "world"]);
-  assert.deepEqual(words.map((word) => word.start), [1000, 1500]);
+  const words = parseJson3({
+    events: [
+      { tStartMs: 1000, segs: [{ utf8: "Hel" }, { utf8: "lo" }, { utf8: " world", tOffsetMs: 500 }] },
+      { aAppend: 1, tStartMs: 1800, segs: [{ utf8: "\n" }] },
+    ],
+  });
+  assert.deepEqual(
+    words.map((word) => word.text),
+    ["Hello", "world"],
+  );
+  assert.deepEqual(
+    words.map((word) => word.start),
+    [1000, 1500],
+  );
 });
 
 test("splits tracks that do not use leading spaces", () => {
-  const words = parseJson3({ events: [
-    { tStartMs: 1000, segs: [{ utf8: "Something" }, { utf8: "is going on" }, { utf8: "here." }] },
-  ] });
-  assert.deepEqual(words.map((word) => word.text), ["Something", "is", "going", "on", "here."]);
+  const words = parseJson3({
+    events: [{ tStartMs: 1000, segs: [{ utf8: "Something" }, { utf8: "is going on" }, { utf8: "here." }] }],
+  });
+  assert.deepEqual(
+    words.map((word) => word.text),
+    ["Something", "is", "going", "on", "here."],
+  );
 });
 
 test("manual events pass through as cues", () => {
-  const cues = parseManualJson3({ events: [
-    { tStartMs: 1000, dDurationMs: 2000, segs: [{ utf8: " Hello" }, { utf8: "\nworld" }] },
-  ] });
+  const cues = parseManualJson3({
+    events: [{ tStartMs: 1000, dDurationMs: 2000, segs: [{ utf8: " Hello" }, { utf8: "\nworld" }] }],
+  });
   assert.deepEqual(cues, [{ start: 1000, end: 3000, text: "Hello world" }]);
 });
 
@@ -70,7 +81,8 @@ test("sanitizes and byte-limits filenames", () => {
 });
 
 test("extracts YouTube's player response without being confused by braces in strings", () => {
-  const html = '<script>var ytInitialPlayerResponse = {"videoDetails":{"videoId":"abc","title":"A } title"},"captions":{}};</script>';
+  const html =
+    '<script>var ytInitialPlayerResponse = {"videoDetails":{"videoId":"abc","title":"A } title"},"captions":{}};</script>';
   const response = extractPlayerResponse(html);
   assert.equal(response.videoDetails.videoId, "abc");
   assert.equal(response.videoDetails.title, "A } title");
@@ -82,16 +94,18 @@ test("detects subtitle URLs that require a Proof-of-Origin token", () => {
 });
 
 test("reuses the player-generated subtitle token for the selected track", () => {
-  const token = findSubtitlePoToken([
-    "https://www.youtube.com/api/timedtext?v=other&pot=wrong",
-    "https://www.youtube.com/api/timedtext?v=abc&lang=en&pot=proof123&potc=1&c=WEB",
-  ], "abc");
+  const token = findSubtitlePoToken(
+    [
+      "https://www.youtube.com/api/timedtext?v=other&pot=wrong",
+      "https://www.youtube.com/api/timedtext?v=abc&lang=en&pot=proof123&potc=1&c=WEB",
+    ],
+    "abc",
+  );
   assert.deepEqual(token, { pot: "proof123", potc: "1", client: "WEB" });
 
-  const result = new URL(buildCaptionUrl(
-    "https://www.youtube.com/api/timedtext?v=abc&lang=es&exp=xpe&xosf=1&xospf=1",
-    token,
-  ));
+  const result = new URL(
+    buildCaptionUrl("https://www.youtube.com/api/timedtext?v=abc&lang=es&exp=xpe&xosf=1&xospf=1", token),
+  );
   assert.equal(result.searchParams.get("lang"), "es");
   assert.equal(result.searchParams.get("fmt"), "json3");
   assert.equal(result.searchParams.get("pot"), "proof123");

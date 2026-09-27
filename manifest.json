@@ -13,41 +13,24 @@
     "96": "icons/icon.svg"
   },
   "background": {
-    "scripts": [
-      "src/background.js"
-    ]
+    "scripts": ["src/background.js"]
   },
-  "permissions": [
-    "webRequest"
-  ],
+  "permissions": ["webRequest"],
   "content_scripts": [
     {
-      "matches": [
-        "https://www.youtube.com/*",
-        "https://m.youtube.com/*"
-      ],
-      "js": [
-        "src/core.js",
-        "src/content.js"
-      ],
-      "css": [
-        "src/content.css"
-      ],
+      "matches": ["https://www.youtube.com/*", "https://m.youtube.com/*"],
+      "js": ["src/core.js", "src/content.js"],
+      "css": ["src/content.css"],
       "run_at": "document_idle"
     }
   ],
-  "host_permissions": [
-    "https://www.youtube.com/*",
-    "https://m.youtube.com/*"
-  ],
+  "host_permissions": ["https://www.youtube.com/*", "https://m.youtube.com/*"],
   "browser_specific_settings": {
     "gecko": {
       "id": "@yt-quicksub.jerieljan",
       "strict_min_version": "140.0",
       "data_collection_permissions": {
-        "required": [
-          "none"
-        ]
+        "required": ["none"]
       }
     },
     "gecko_android": {

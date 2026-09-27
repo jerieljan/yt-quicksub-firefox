@@ -4,17 +4,23 @@
   "private": true,
   "description": "A standalone Firefox extension that rebuilds YouTube captions into readable SRT files.",
   "scripts": {
-    "test": "node --test",
+    "test": "vitest run",
     "lint:manifest": "node scripts/release.mjs --lint",
-    "lint": "node scripts/release.mjs --lint",
+    "lint": "biome lint . && npm run lint:manifest",
     "package": "npm test && node scripts/release.mjs",
-    "release": "npm run package"
+    "release": "npm run package",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint:fix": "biome lint --write ."
   },
   "engines": {
-    "node": ">=20"
+    "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "vitest": "^5.0.2",
     "web-ext": "10.7.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "packageManager": "npm@11.18.0"
 }
