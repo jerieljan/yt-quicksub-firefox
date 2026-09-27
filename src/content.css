@@ -1,0 +1,94 @@
+#yt-quicksub-control {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  margin-inline-start: 8px;
+  font-family: Roboto, Arial, sans-serif;
+}
+
+#yt-quicksub-control[hidden] {
+  display: none;
+}
+
+#yt-quicksub-control button {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--yt-spec-badge-chip-background, rgba(0, 0, 0, 0.05));
+  color: var(--yt-spec-text-primary, #0f0f0f);
+  cursor: pointer;
+  font: 500 14px/40px Roboto, Arial, sans-serif;
+  height: 40px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+#yt-quicksub-control button:hover:not(:disabled) {
+  background: var(--yt-spec-button-chip-background-hover, rgba(0, 0, 0, 0.1));
+}
+
+#yt-quicksub-control button:focus-visible {
+  outline: 2px solid var(--yt-spec-call-to-action, #065fd4);
+  outline-offset: 2px;
+}
+
+#yt-quicksub-control .yt-quicksub-icon {
+  display: inline-flex;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+}
+
+#yt-quicksub-control svg {
+  display: none;
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+#yt-quicksub-control button[data-state="ready"] .yt-quicksub-icon-download,
+#yt-quicksub-control button[data-state="success"] .yt-quicksub-icon-success,
+#yt-quicksub-control button[data-state="error"] .yt-quicksub-icon-error {
+  display: block;
+}
+
+#yt-quicksub-control button[data-state="busy"] {
+  cursor: progress;
+}
+
+#yt-quicksub-control button[data-state="busy"] .yt-quicksub-icon {
+  width: 16px;
+  height: 16px;
+  margin: 2px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: yt-quicksub-spin 700ms linear infinite;
+}
+
+#yt-quicksub-control button[data-state="error"] {
+  color: var(--yt-spec-error-indicator, #c00);
+}
+
+@keyframes yt-quicksub-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #yt-quicksub-control button[data-state="busy"] .yt-quicksub-icon {
+    animation: none;
+  }
+}
+
+html[dark] #yt-quicksub-control button {
+  background: var(--yt-spec-badge-chip-background, rgba(255, 255, 255, 0.1));
+  color: var(--yt-spec-text-primary, #f1f1f1);
+}
+
+html[dark] #yt-quicksub-control button:hover:not(:disabled) {
+  background: var(--yt-spec-button-chip-background-hover, rgba(255, 255, 255, 0.2));
+}

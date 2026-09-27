@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>yt-quicksub</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <span class="mark" aria-hidden="true"></span>
+        <div>
+          <h1>yt-quicksub</h1>
+          <p>Readable captions, timed locally.</p>
+        </div>
+      </header>
+
+      <p id="status" role="status" aria-live="polite">Checking this video…</p>
+
+      <form id="download-form" hidden>
+        <label for="track">Caption track</label>
+        <select id="track" name="track"></select>
+        <button id="download" type="submit">Download SRT</button>
+      </form>
+
+      <p class="privacy">Subtitles are retrieved from YouTube. Caption processing and corrections are handled locally.</p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "yt-quicksub-firefox",
+  "version": "0.1.5",
+  "private": true,
+  "description": "A standalone Firefox extension that rebuilds YouTube captions into readable SRT files.",
+  "scripts": {
+    "test": "node --test",
+    "lint:manifest": "node scripts/release.mjs --lint",
+    "lint": "node scripts/release.mjs --lint",
+    "package": "npm test && node scripts/release.mjs",
+    "release": "npm run package"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "web-ext": "10.7.0"
+  },
+  "license": "MIT"
+}
